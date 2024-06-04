@@ -10,14 +10,14 @@
 
     if (isset($_GET['id'])){ 
   
-        $id = $_GET['id'];; 
+        $id = $_GET['id'];
    
         $sql="UPDATE karyawan SET status='0' WHERE id_karyawan='$id';"; 
   
         // Execute the query 
         mysqli_query($conn,$sql); 
 
-        $sql = "UPDATE karyawan SET status='0' WHERE id_karyawan='$id';";
+        $sql = "UPDATE karyawan SET status='0' WHERE id_karyawan='$id'";
         $query = mysqli_query($conn, $sql);
         // apakah query update berhasil?
         if ($query) {

@@ -84,22 +84,23 @@ if (isset($_POST['submit'])) {
                                     <form class="row g-3 needs-validation" action="" method="post">
 
                                         <div class="col-12">
-                                            <label style="color: #c4c4c4;" for="username" class="form-label">Username</label>
+                                            <label for="username" class="form-label">Username</label>
                                             <input type="text" name="username" class="form-control" id="username" required>
+                                            <input type="hidden" name="id_user" id="id_user" />
                                         </div>
 
                                         <div class="col-12">
-                                            <label style="color: #c4c4c4;" for="password" class="form-label">Password</label>
+                                            <label for="password" class="form-label">Password</label>
                                             <input type="password" name="password" class="form-control" id="password" required>
                                         </div>
 
-                                        <p style="font-weight: bold;" class="small mb-0"><a href="konfirmasi_email.php">Lupa sandi?</a></p>
+                                        <p style="font-weight: bold;" class="small mb-0"><a href="lupa_password.php">Lupa sandi?</a></p>
 
                                         <div class="col-12">
                                             <button style="font-weight: bold;" class="btn btn-primary w-100" type="submit" name="submit">Login</button>
                                         </div>
                                         <div class="col-12">
-                                            <p style="color: #c4c4c4; font-weight: bold;" class="small mb-0">Tidak punya akun? <a style="font-weight: bold;" href="registrasi.php">Buat akun</a></p>
+                                            <p style="color: #c4c4c4; font-weight: bold;" class="small mb-0">Tidak punya akun? <a style="font-weight: bold;" href="register.php">Buat akun</a></p>
                                         </div>
                                     </form>
 
