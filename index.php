@@ -61,9 +61,7 @@ $ksm_nonaktif = implode(", ",$kry);
                         <h6>Filter</h6>
                       </li>
 
-                      <li><a class="dropdown-item" href="#">Today</a></li>
-                      <li><a class="dropdown-item" href="#">This Month</a></li>
-                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                      <li><a class="dropdown-item" href="karyawan_baru.php">Lihat Detail</a></li>
                     </ul>
                   </div>
 
@@ -94,9 +92,7 @@ $ksm_nonaktif = implode(", ",$kry);
                         <h6>Filter</h6>
                       </li>
 
-                      <li><a class="dropdown-item" href="#">Today</a></li>
-                      <li><a class="dropdown-item" href="#">This Month</a></li>
-                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                      <li><a class="dropdown-item" href="karyawan_lama.php">Lihat Detail</a></li>
                     </ul>
                   </div>
 
@@ -127,9 +123,7 @@ $ksm_nonaktif = implode(", ",$kry);
                         <h6>Filter</h6>
                       </li>
 
-                      <li><a class="dropdown-item" href="#">Today</a></li>
-                      <li><a class="dropdown-item" href="#">This Month</a></li>
-                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                      <li><a class="dropdown-item" href="data_konsumenBaru.php">Lihat Detail</a></li>
                     </ul>
                   </div>
 
@@ -160,9 +154,7 @@ $ksm_nonaktif = implode(", ",$kry);
                         <h6>Filter</h6>
                       </li>
 
-                      <li><a class="dropdown-item" href="#">Today</a></li>
-                      <li><a class="dropdown-item" href="#">This Month</a></li>
-                      <li><a class="dropdown-item" href="#">This Year</a></li>
+                      <li><a class="dropdown-item" href="data_konsumenLama.php">Lihat Detail</a></li>
                     </ul>
                   </div>
 

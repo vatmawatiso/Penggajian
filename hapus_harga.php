@@ -5,20 +5,11 @@ require 'function.php';
 
 $id_harga = $_GET["id"];
 
-if( hapusHarga($id_harga) > 0){
-	echo "
-			<script>
-				alert('Data berhasil dihapus!');
-				document.location.href ='input_harga.php';
-			</script>
-		";
+// Set status penghapusan untuk digunakan sebagai alert
+if (hapusHarga($id_harga) > 0) {
+    header("Location: input_harga.php?delete_status=success");
 } else {
-	echo "
-			<script>
-				alert('Data gagal dihapus!');
-				document.location.href ='input_harga.php';
-			</script>
-		";
+    header("Location: input_harga.php?delete_status=error");
 }
 
 ?>

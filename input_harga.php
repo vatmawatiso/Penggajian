@@ -4,15 +4,62 @@ session_start();
 include_once("koneksi.php");
 require 'function.php';
 
-//KONDISI KETIKA KLIK BUTTON TAMBAH BAGIAN
-if (isset($_POST['submit'])) {
+//KONDISI KETIKA KLIK BUTTON TAMBAH HARGA
+$alert_message = '';
+$alert_class = '';
 
-  if (insertHarga($_POST) > 0) {
-      echo "<script>alert('Berhasil tambah harga!')</script>";
-  } else {
-      echo mysqli_error($conn);
-  }
+// if (isset($_POST['submit'])) {
+//     $result = insertHarga($_POST);
+  
+//     if ($result['success']) {
+//         $alert_message = 'Berhasil menambahkan data harga!';
+//         $alert_class = 'alert-success';
+//     } else {
+//         $alert_message = $result['message'];
+//         $alert_class = 'alert-danger';
+//     }
+  
+//     echo "<script>
+//             setTimeout(function() {
+//                 window.location.href = 'input_harga.php';
+//             }, 9000);
+//           </script>";
+//   }
+
+if (isset($_POST['submit'])) {
+    $result = insertHarga($_POST);
+
+    if ($result === -1) {
+        $alert_message = 'Gagal menambahkan harga. Harga untuk kombinasi produk dan bagian tersebut sudah ada.';
+        $alert_class = 'alert-danger';
+    } elseif ($result > 0) {
+        $alert_message = 'Berhasil menambahkan harga!';
+        $alert_class = 'alert-success';
+    } else {
+        $alert_message = 'Gagal menambahkan harga.';
+        $alert_class = 'alert-danger';
+    }
+
+    echo "<script>
+            setTimeout(function() {
+                window.location.href = 'input_harga.php';
+            }, 3000);
+          </script>";
 }
+
+//HAPUS HARGA
+if (isset($_GET['delete_status'])) {
+    $delete_status = $_GET['delete_status'];
+  
+    if ($delete_status == 'success') {
+        $alert_message = 'Data bagian berhasil dihapus!';
+        $alert_class = 'alert-success';
+    } elseif ($delete_status == 'error') {
+        $alert_message = 'Gagal menghapus data bagian!';
+        $alert_class = 'alert-danger';
+    }
+  }
+
 
 ?>
 
@@ -33,30 +80,18 @@ if (isset($_POST['submit'])) {
     <section class="section">
         <div class="row">
             <div class="col-lg-12">
+                <?php if ($alert_message): ?>
+                    <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                        <?php echo $alert_message; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
 
             <div class="card">
                 <div class="card-body">
                 <h5 class="card-title">Harga Produk dan Bagian</h5>
 
                 <form action="" method="POST">
-                    <div class="row mb-3">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Nama Produk</label>
-                        <div class="col-sm-10">
-                            <select name="id_produk" class="form-select" aria-label="Default select example" required>
-                                <option selected>Pilih jenis produk</option>
-                                <?php
-                                    include "koneksi.php";
-                                    //query menampilkan nama unit kerja ke dalam combobox
-                                    $query    = mysqli_query($conn, "SELECT * FROM produk");
-                                    while ($data = mysqli_fetch_array($query)) {
-                                ?>
-                                    <option value=" <?= $data['id_produk']; ?>"><?php echo $data['nama_produk']; ?></option>
-                                <?php
-                                    }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
                     <div class="row mb-3">
                         <label for="inputEmail3" class="col-sm-2 col-form-label">Nama Bagian</label>
                         <div class="col-sm-10">
@@ -69,6 +104,25 @@ if (isset($_POST['submit'])) {
                                     while ($data = mysqli_fetch_array($query)) {
                                 ?>
                                     <option value=" <?= $data['id_bagian']; ?>"><?php echo $data['nama_bagian']; ?></option>
+                                <?php
+                                    }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label for="inputEmail3" class="col-sm-2 col-form-label">Nama Produk</label>
+                        <div class="col-sm-10">
+                            <input type="hidden" name="id_harga" value="<?php echo $d['id_harga'] ?>" />
+                            <select name="id_produk" class="form-select" aria-label="Default select example" required>
+                                <option selected>Pilih jenis produk</option>
+                                <?php
+                                    include "koneksi.php";
+                                    //query menampilkan nama unit kerja ke dalam combobox
+                                    $query    = mysqli_query($conn, "SELECT * FROM produk");
+                                    while ($data = mysqli_fetch_array($query)) {
+                                ?>
+                                    <option value=" <?= $data['id_produk']; ?>"><?php echo $data['nama_produk']; ?></option>
                                 <?php
                                     }
                                 ?>
@@ -114,12 +168,12 @@ if (isset($_POST['submit'])) {
                     ?>
                     <tr>
                       <th scope="row"><?= $no++; ?></th>
-                      <td><?= $d["nama_produk"]; ?></td>
-                      <td><?= $d["nama_bagian"]; ?></td>
+                      <td><?= $d["nama_bagian"]; ?> <?= $d["id_bagian"]; ?></td>
+                      <td><?= $d["nama_produk"]; ?> <?= $d["id_produk"]; ?></td>
                       <td>Rp <?= $d["harga"]; ?></td>
                       <td>
                         <a href="update_harga.php?id=<?php echo $d['id_harga']; ?>" class="btn btn-success"><i class="bi bi-pencil-square"></i> Edit</a>
-                        <a href="hapus_harga.php?id=<?php echo $d['id_harga']; ?>" class="btn btn-danger"><i class="bi bi-trash-fill"></i>  Hapus</a>
+                        <a href="hapus_harga.php?id=<?php echo $d['id_harga']; ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus harga ini?')"><i class="bi bi-trash-fill"></i>  Hapus</a>
                       </td>
                     </tr>
                     <?php

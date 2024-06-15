@@ -5,20 +5,11 @@ require 'function.php';
 
 $id_produk = $_GET["id"];
 
-if( hapusProduk($id_produk) > 0){
-	echo "
-			<script>
-				alert('Data berhasil dihapus!');
-				document.location.href ='input_produk.php';
-			</script>
-		";
+// Set status penghapusan untuk digunakan sebagai alert
+if (hapusProduk($id_produk) > 0) {
+    header("Location: input_produk.php?delete_status=success");
 } else {
-	echo "
-			<script>
-				alert('Data gagal dihapus!');
-				document.location.href ='input_produk.php';
-			</script>
-		";
+    header("Location: input_produk.php?delete_status=error");
 }
 
 ?>

@@ -26,7 +26,6 @@ if (mysqli_num_rows($query) < 1) {
     die("data tidak ditemukan...");
 }
 
-
 ?>
 
 <!-- ======= Header ======= -->
@@ -167,12 +166,10 @@ if (mysqli_num_rows($query) < 1) {
 
                             // ambil data dari formulir
                             $id_user = $_POST['id_user'];
-                            $username = $_POST['username'];
-                            $email = $_POST['email'];
                             $telp = $_POST['telp'];
 
                             // buat query update
-                            $sql = "UPDATE akun SET username='$username', email='$email', telp='$telp' WHERE id_user=$id_user";
+                            $sql = "UPDATE akun SET telp='$telp' WHERE id_user=$id_user";
                             $query = mysqli_query($conn, $sql);
 
                             // apakah query update berhasil?

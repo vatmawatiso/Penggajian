@@ -9,13 +9,13 @@ if (!isset($koneksi)) {
 }
 
 // Query untuk delete data
-$sql = "DELETE FROM karyawan WHERE id_karyawan='$id'";
+$sql = "DELETE FROM konsumen WHERE id_konsumen='$id'";
 $query = mysqli_query($koneksi, $sql);
 
 // Set status penghapusan untuk digunakan sebagai alert
 if ($query) {
-    header("Location: karyawan_lama.php?delete_status=success");
+    header("Location: data_konsumenLama.php?delete_status=success");
 } else {
-    header("Location: karyawan_lama.php?delete_status=error");
+    header("Location: data_konsumenLama.php?delete_status=error");
 }
 ?>

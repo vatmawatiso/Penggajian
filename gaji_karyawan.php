@@ -10,6 +10,9 @@ $hasil_rupiah = "";
 $harga_rupiah = "";
 $bil2 = "";
 $subtotal_rupiah = "";
+$nik = "";
+$alamat = "";
+$jabatan = "";
 
 include "koneksi.php";
 
@@ -21,19 +24,38 @@ function hapusDataGaji($index) {
     }
 }
 
+//GET DATA KARYAWAN
+$sql = "SELECT * FROM karyawan";
+$query = mysqli_query($koneksi, $sql);
+$data_kry = mysqli_fetch_assoc($query);
+
+//SIMPAN KE SESSION
+$_SESSION['DATAS'] = $data_kry;
+
 if (isset($_POST['hasil'])) {
-    // Ambil data dari POST
+    // Ambil data dari POST select
     $nmKaryawan = $_POST["karyawan"] ?? "";
     $nmProduk = $_POST["produk"] ?? "";
     $nmBagian = $_POST["bagian"] ?? "";
     $bil1 = $_POST['bil1'] ?? 0;
     $bil2 = $_POST['bil2'] ?? 0;
     $operasi = $_POST['operasi'] ?? '';
+    // $NIK = $_POST["NIK"] ?? "";
+
+    // Pisahkan nilai menjadi tiga bagian
+    list($nama_karyawan, $NIK, $alamat_kry) = explode('|', $nmKaryawan);
 
     // Simpan ke variabel lain jika perlu
-    $nm_karyawan = $nmKaryawan;
+    $nm_karyawan = $nama_karyawan;
     $nm_produk = $nmProduk;
     $nm_bagian = $nmBagian;
+    $nik_karyawan = $NIK;
+
+        // Gunakan nilai sesuai kebutuhan Anda
+        echo "Nama Karyawan: " . htmlspecialchars($nm_karyawan) . "<br>";
+        echo "NIK Karyawan: " . htmlspecialchars($nik_karyawan) . "<br>";
+        echo "alamat Karyawan: " . htmlspecialchars($alamat_kry) . "<br>";
+
 
     // Query untuk mengambil data harga berdasarkan produk dan bagian
     $sql = "SELECT 
@@ -57,8 +79,6 @@ if (isset($_POST['hasil'])) {
 
     // Proses perhitungan
     $bil1 = $data["Harga"] ?? 0; // Harga dari produk dan bagian yang dipilih
-    $bil2 = $_POST['bil2'] ?? 0;
-    $operasi = $_POST['operasi'] ?? '';
 
     switch ($operasi) {
         case 'tambah':
@@ -75,8 +95,8 @@ if (isset($_POST['hasil'])) {
             break;
     }
 
-    $hasil_rupiah = "Rp " . number_format($hasil, 0, ',', '.');
-    $harga_rupiah = "Rp " . number_format($bil1, 0, ',', '.');
+    $hasil_rupiah = number_format($hasil, 0, ',', '.');
+    $harga_rupiah = number_format($bil1, 0, ',', '.');
 
     // Simpan data ke session
     $_SESSION['data_gaji'][] = [
@@ -87,7 +107,34 @@ if (isset($_POST['hasil'])) {
         'hasil' => $hasil_rupiah,
         'bil2' => $bil2,
         'subtotal' => $subtotal_rupiah,
+        'DATAS' => $data_kry,
+        'alamat' => $alamat_kry,
+        'NIK' => $nik_karyawan,
     ];
+
+        // Insert data ke tabel laporan
+        $nm_karyawan = $nm_karyawan;
+        $nik = $nik_karyawan;
+        $jabatan = $data_kry['jabatan'];
+        $alamat = $alamat_kry;
+        $nm_produk = $nm_produk;
+        $nm_bagian = $nm_bagian;
+        $bil1 = $bil1;
+        $bil2 = $bil2;
+        $hasil = $hasil;
+        $tanggal_gajian = date('Y-m-d');
+
+        $query_insert = "INSERT INTO `laporan`(`nm_karyawan`, `nik_karyawan`, `jabatan_karyawan`, `alamat_karyawan`, `produk`, `bagian`, `harga`, `jumlah`, `total`, `tanggal_gajian`) 
+                         VALUES ('$nm_karyawan', '$nik', '$jabatan', '$alamat', '$nm_produk', '$nm_bagian', '$bil1', '$bil2', '$hasil', '$tanggal_gajian')";
+
+                        //  var_dump($query_insert);
+                        //  die();
+        $query = mysqli_query($koneksi, $query_insert);
+            if ($query) {
+                echo "Data berhasil disimpan ke tabel laporan.";
+            } else {
+                echo "Gagal menyimpan data ke tabel laporan: " . mysqli_error($koneksi);
+            }
 
 }
 
@@ -102,15 +149,14 @@ $data_gaji = $_SESSION['data_gaji'] ?? [];
 // Menghitung subtotal
 $subtotal = 0;
 foreach ($data_gaji as $gaji) {
-    $hasil = str_replace('Rp ', '', $gaji['hasil']);
+    $hasil = str_replace('Rp ', '', $gaji['total']);
     $hasil = str_replace('.', '', $hasil);
     $subtotal += (int) $hasil;
 }
-$subtotal_rupiah = "Rp " . number_format($subtotal, 0, ',', '.');
+$subtotal_rupiah =number_format($subtotal, 0, ',', '.');
 
 // Simpan subtotal ke session
 $_SESSION['subtotal'] = $subtotal_rupiah;
-
 ?>
 
 <!-- ======= Header ======= -->
@@ -143,10 +189,10 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                   <select name="karyawan" class="form-select" aria-label="Default select example" required>
                     <option selected>Masukkan nama karyawan</option>
                     <?php 
-                      $sql = mysqli_query($koneksi,"select * from karyawan") or die (mysqli_error($koneksi));
-                      while ($data=mysqli_fetch_array($sql)) {
+                      $sql = mysqli_query($koneksi, "SELECT * FROM karyawan") or die(mysqli_error($koneksi));
+                      while ($data = mysqli_fetch_array($sql)) {                   
                     ?>
-                      <option value="<?=$data['nama_karyawan']?>"><?=$data['nama_karyawan']?></option> 
+                      <option value="<?=$data['nama_karyawan']?>|<?=$data['NIK']?>|<?=$data['alamat']?>"><?=$data['nama_karyawan']?></option> 
                     <?php
                       }
                     ?>
@@ -160,16 +206,15 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                   <select name="bagian" class="form-select" aria-label="Default select example" required>
                     <option selected>Masukkan bagian</option>
                     <?php 
-                        $sql = mysqli_query($koneksi, "SELECT bagian.nama_bagian, MIN(harga.id_harga) as id_harga, MIN(harga.harga) as harga
+                      $sql = mysqli_query($koneksi, "SELECT bagian.nama_bagian, MIN(harga.id_harga) as id_harga, MIN(harga.harga) as harga
                         FROM harga
                         JOIN bagian ON harga.id_bagian = bagian.id_bagian
                         GROUP BY bagian.nama_bagian;") or die (mysqli_error($koneksi));
-                      // $sql = mysqli_query($koneksi,"select * from bagian") or die (mysqli_error($koneksi));
-                      while ($data=mysqli_fetch_array($sql)) {
+                      while ($data = mysqli_fetch_array($sql)) {
                     ?>
                       <option value="<?=$data['nama_bagian']?>"><?=$data['nama_bagian']?></option> 
                     <?php
-                       }
+                      }
                     ?>
                   </select>
                 </div>
@@ -181,13 +226,11 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                   <select name="produk" class="form-select" aria-label="Default select example" required>
                     <option selected>Masukkan produk</option>
                     <?php 
-                        $sql = mysqli_query($koneksi, "SELECT produk.nama_produk, MIN(harga.id_harga) as id_harga, MIN(harga.harga) as harga
+                      $sql = mysqli_query($koneksi, "SELECT produk.nama_produk, MIN(harga.id_harga) as id_harga, MIN(harga.harga) as harga
                         FROM harga
                         JOIN produk ON harga.id_produk = produk.id_produk
-                        GROUP BY produk.nama_produk;
-                        ") or die (mysqli_error($koneksi));
-                      // $sql = mysqli_query($koneksi,"select * from produk") or die (mysqli_error($koneksi));
-                      while ($data=mysqli_fetch_array($sql)) {
+                        GROUP BY produk.nama_produk;") or die(mysqli_error($koneksi));
+                      while ($data = mysqli_fetch_array($sql)) {
                     ?>
                       <option value="<?=$data['nama_produk']?>"><?=$data['nama_produk']?></option> 
                     <?php
@@ -200,7 +243,7 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
               <div class="row mb-3">
                   <label for="inputText" class="col-sm-8 col-form-label"></label>
                   <div class="col-sm-4">
-                    <input type="number" name="bil2" class="form-control" placeholder="Masukkan jumlah yang dikerjakan" required>
+                    <input type="number" name="bil2" class="form-control" placeholder="Masukkan jumlah yang dikerjakan">
                   </div>
               </div>
 
@@ -221,7 +264,7 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                 <label for="inputText" class="col-sm-8 col-form-label"></label>
                 <div class="col-sm-4">
                   <button type="submit" name="hasil" class="btn btn-primary"><i class="bi bi-calculator-fill"></i> Hitung</button>
-                  <a href="cetak_gaji.php" class="btn btn-success" target="_BLANK"><i class="bi bi-printer-fill"></i> Cetak</a>
+                  <a href="slip_gaji.php" class="btn btn-success" target="_BLANK"><i class="bi bi-printer-fill"></i> Cetak</a>
                 </div>
               </div>
 
@@ -233,9 +276,9 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                     <th scope="col">Nama Karyawan</th>
                     <th scope="col">Nama Bagian</th>
                     <th scope="col">Jenis Produk</th>
+                    <th scope="col">QTY</th>
                     <th scope="col">Harga</th>
-                    <th scope="col">Total Kerja</th>
-                    <th scope="col">Total</th>
+                    <th scope="col">Jumlah</th>
                     <th scope="col">Aksi</th>
                   </tr>
                 </thead>
@@ -244,12 +287,12 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                       <?php foreach ($data_gaji as $index => $gaji) : ?>
                       <tr>
                           <th scope="row"><?= $index + 1; ?></th>
-                          <td><?= $gaji['nama_karyawan']; ?></td>
-                          <td><?= $gaji['nama_bagian']; ?></td>
-                          <td><?= $gaji['nama_produk']; ?></td>
-                          <td><?= $gaji['harga']; ?></td>
-                          <td><?= $gaji['bil2']; ?> Mengerjakan</td>
-                          <td><?= $gaji['hasil']; ?></td>
+                          <td><?= $gaji['nm_karyawan']; ?></td>
+                          <td><?= $gaji['bagian']; ?></td>
+                          <td><?= $gaji['produk']; ?></td>
+                          <td><?= $gaji['jumlah']; ?></td>
+                          <td><?= 'Rp ' . number_format($gaji['harga'], 0, ',', '.'); ?></td>
+                          <td><?= 'Rp ' . number_format($gaji['total'], 0, ',', '.'); ?></td>
                           <td>
                               <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" style="display:inline;">
                                   <input type="hidden" name="index" value="<?= $index; ?>">
@@ -260,8 +303,8 @@ $_SESSION['subtotal'] = $subtotal_rupiah;
                       <?php endforeach; ?>
                   <?php endif; ?>
                   <tr>
-                    <td style="text-align: left;"><strong>Subtotal:</strong></td>
-                    <td style="font-size: 1.5em;"><?= $subtotal_rupiah; ?></td>
+                    <td style="text-align: left;"><strong>Total:</strong></td>
+                    <td style="font-size: 1.5em;">Rp <?= $subtotal_rupiah; ?></td>
                     <td></td>
                   </tr>
                 </tbody>  

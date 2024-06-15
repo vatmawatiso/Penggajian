@@ -4,14 +4,36 @@
 include_once("koneksi.php");
 require 'function.php';
 
-if (isset($_POST['submit'])) {
+$alert_message = '';
+$alert_class = '';
 
-    if (updateKonsumen($_POST) > 0) {
-        echo "<script>alert('Berhasil ubah data konsumen!')</script>";
+if (isset($_POST['submit'])) {
+    $result = updateKonsumen($_POST);
+    $source = strtolower(stripslashes($_POST["source"]));
+
+    if ($result > 0) {
+        $alert_message = 'Berhasil ubah data konsumen!';
+        $alert_class = 'alert-success';
     } else {
-        echo mysqli_error($conn);
+        $alert_message = 'Gagal ubah data konsumen!';
+        $alert_class = 'alert-danger';
     }
+
+    echo "<script>
+            setTimeout(function() {
+                window.location.href = '$source.php';
+            }, 3000);
+          </script>";
 }
+
+// if (isset($_POST['submit'])) {
+
+//     if (updateKonsumen($_POST) > 0) {
+//         echo "<script>alert('Berhasil ubah data konsumen!')</script>";
+//     } else {
+//         echo mysqli_error($conn);
+//     }
+// }
 ?>
 
 
@@ -27,18 +49,17 @@ if (isset($_POST['submit'])) {
 
     <div class="pagetitle">
       <h1>Data Tables</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">Tables</li>
-          <li class="breadcrumb-item active">Data</li>
-        </ol>
-      </nav>
     </div><!-- End Page Title -->
 
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
+          <?php if ($alert_message): ?>
+              <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                  <?php echo $alert_message; ?>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          <?php endif; ?>
 
           <div class="card">
             <div class="card-body">
@@ -48,7 +69,6 @@ if (isset($_POST['submit'])) {
                 include 'koneksi.php';
                 $id = $_GET['id'];
                 $source = $_GET['source'];
-                echo $source;
                 $data = "SELECT * FROM konsumen WHERE id_konsumen = '$id'";
                 $query = mysqli_query($conn, $data);
                 $d = mysqli_fetch_array($query);

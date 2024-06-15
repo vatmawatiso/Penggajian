@@ -4,14 +4,27 @@ session_start();
 include_once("koneksi.php");
 require 'function.php';
 
-if (isset($_POST['submit'])) {
+$alert_message = '';
+$alert_class = '';
 
-    if (updateBagian($_POST) > 0) {
-        echo "<script>alert('Berhasil ubah data bagian!')</script>";
-    } else {
-        echo mysqli_error($conn);
-    }
+if (isset($_POST['submit'])) {
+  $result = updateBagian($_POST);
+
+  if ($result['success']) {
+      $alert_message = 'Berhasil mengubah data bagian!';
+      $alert_class = 'alert-success';
+  } else {
+      $alert_message = $result['message'];
+      $alert_class = 'alert-danger';
+  }
+
+  echo "<script>
+          setTimeout(function() {
+              window.location.href = 'input_bagian.php';
+          }, 3000);
+        </script>";
 }
+
 ?>
 
 <!-- ======= Header ======= -->
@@ -26,17 +39,16 @@ if (isset($_POST['submit'])) {
 
     <div class="pagetitle">
       <h1>Edit Bagian</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-          <li class="breadcrumb-item">Forms</li>
-          <li class="breadcrumb-item active">Layouts</li>
-        </ol>
-      </nav>
     </div><!-- End Page Title -->
     <section class="section">
       <div class="row">
-        <div class="col-lg-10">
+        <div class="col-lg-12">
+          <?php if ($alert_message): ?>
+              <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                  <?php echo $alert_message; ?>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          <?php endif; ?>
 
           <div class="card">
             <div class="card-body">

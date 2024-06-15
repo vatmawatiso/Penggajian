@@ -5,20 +5,11 @@ require 'function.php';
 
 $id_bagian = $_GET["id"];
 
-if( hapusBagian($id_bagian) > 0){
-	echo "
-			<script>
-				alert('Data berhasil dihapus!');
-				document.location.href ='input_bagian.php';
-			</script>
-		";
+// Set status penghapusan untuk digunakan sebagai alert
+if (hapusBagian($id_bagian) > 0) {
+    header("Location: input_bagian.php?delete_status=success");
 } else {
-	echo "
-			<script>
-				alert('Data gagal dihapus!');
-				document.location.href ='input_bagian.php';
-			</script>
-		";
+    header("Location: input_bagian.php?delete_status=error");
 }
 
 ?>

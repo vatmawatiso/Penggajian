@@ -4,14 +4,44 @@
 include_once("koneksi.php");
 require 'function.php';
 
-if (isset($_POST['submit'])) {
+$alert_message = '';
+$alert_class = '';
 
+if (isset($_POST['submit'])) {
     if (updateStatusKB($_POST) > 0) {
-        echo "<script>alert('Berhasil ubah status konsumen!')</script>";
+        $alert_message = 'Berhasil ubah status konsumen!';
+        $alert_class = 'alert-success';
     } else {
-        echo mysqli_error($conn);
+        $alert_message = 'Gagal ubah status konsumen!';
+        $alert_class = 'alert-danger';
+    }
+    echo "<script>
+            setTimeout(function() {
+                window.location.href = 'data_konsumenBaru.php';
+            }, 3000);
+          </script>";
+}
+
+if (isset($_GET['status'])) {
+    $status = $_GET['status'];
+
+    if ($status == 'success') {
+        $alert_message = 'Status konsumen berhasil diubah!';
+        $alert_class = 'alert-success';
+    } elseif ($status == 'error') {
+        $alert_message = 'Gagal mengubah status konsumen!';
+        $alert_class = 'alert-danger';
     }
 }
+
+// if (isset($_POST['submit'])) {
+
+//     if (updateStatusKB($_POST) > 0) {
+//         echo "<script>alert('Berhasil ubah status konsumen!')</script>";
+//     } else {
+//         echo mysqli_error($conn);
+//     }
+// }
 ?>
 
 <!-- ======= Header ======= -->
@@ -32,6 +62,12 @@ if (isset($_POST['submit'])) {
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
+          <?php if ($alert_message): ?>
+              <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                  <?php echo $alert_message; ?>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          <?php endif; ?>
 
           <div class="card">
             <div class="card-body">
@@ -87,18 +123,18 @@ if (isset($_POST['submit'])) {
                       <?php  
                         if($d['proses']=="1") {
                       ?>
-                        <a href="nonaktif.php?id=<?php echo $d['id_konsumen']; ?>"><span class="badge bg-danger">Kontrak Selesai</span></a>
+                        <a href="kontrak_selesai.php?id=<?php echo $d['id_konsumen']; ?>"><span class="badge bg-danger">Kontrak Selesai</span></a>
                         
                       <?php
                         }else {
                       ?>
-                        <a href="aktif.php?id=<?php echo $d['id_konsumen']; ?>"><span class="badge bg-success">Kontrak Belum Selesai</span></a>
+                        <a href="kontrak_belumSelesai.php?id=<?php echo $d['id_konsumen']; ?>"><span class="badge bg-success">Kontrak Belum Selesai</span></a>
                       <?php
                         }
                       ?> 
                     </td>
                     <td>
-                      <a href="update_konsumen.php?id=<?php echo $d['id_konsumen']; ?>&source=konsumen_baru" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a>
+                      <a href="update_konsumen.php?id=<?php echo $d['id_konsumen']; ?>&source=data_konsumenBaru" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a>
                     </td>
                   </tr>
                 <?php 

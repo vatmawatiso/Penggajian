@@ -5,14 +5,40 @@ include_once("koneksi.php");
 require 'function.php';
 
 //KONDISI KETIKA KLIK BUTTON TAMBAH BAGIAN
-if (isset($_POST['tambah'])) {
+$alert_message = '';
+$alert_class = '';
 
-  if (insertBagian($_POST) > 0) {
-      echo "<script>alert('Berhasil tambah bagian!')</script>";
+if (isset($_POST['submit'])) {
+  $result = insertBagian($_POST);
+
+  if ($result['success']) {
+      $alert_message = 'Berhasil menambahkan data bagian!';
+      $alert_class = 'alert-success';
   } else {
-      echo mysqli_error($conn);
+      $alert_message = $result['message'];
+      $alert_class = 'alert-danger';
+  }
+
+  echo "<script>
+          setTimeout(function() {
+              window.location.href = 'input_bagian.php';
+          }, 3000);
+        </script>";
+}
+
+//HAPUS BAGIAN
+if (isset($_GET['delete_status'])) {
+  $delete_status = $_GET['delete_status'];
+
+  if ($delete_status == 'success') {
+      $alert_message = 'Data bagian berhasil dihapus!';
+      $alert_class = 'alert-success';
+  } elseif ($delete_status == 'error') {
+      $alert_message = 'Gagal menghapus data bagian!';
+      $alert_class = 'alert-danger';
   }
 }
+
 
 ?>
 
@@ -33,6 +59,12 @@ if (isset($_POST['tambah'])) {
     <section class="section">
         <div class="row">
             <div class="col-lg-12">
+              <?php if ($alert_message): ?>
+                <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                    <?php echo $alert_message; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              <?php endif; ?>
 
             <div class="card">
                 <div class="card-body">
@@ -76,7 +108,7 @@ if (isset($_POST['tambah'])) {
                       <td><?= $d["nama_bagian"]; ?></td>
                       <td>
                         <a href="update_bagian.php?id=<?php echo $d['id_bagian']; ?>" class="btn btn-success"><i class="bi bi-pencil-square"></i> Edit</a>
-                        <a href="hapus_bagian.php?id=<?php echo $d['id_bagian']; ?>" class="btn btn-danger"><i class="bi bi-trash-fill"></i>  Hapus</a>
+                        <a href="hapus_bagian.php?id=<?php echo $d['id_bagian']; ?>" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus bagian ini?')"><i class="bi bi-trash-fill"></i>  Hapus</a>
                       </td>
                     </tr>
                     <?php

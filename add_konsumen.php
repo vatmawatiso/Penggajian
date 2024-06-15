@@ -4,13 +4,25 @@
 include_once("koneksi.php");
 require 'function.php';
 
-if (isset($_POST['tambahKonsumen'])) {
+$alert_message = '';
+$alert_class = '';
 
-    if (insertKonsumen($_POST) > 0) {
-        echo "<script>alert('Berhasil menambahkan data konsumen!')</script>";
+if (isset($_POST['tambahKonsumen'])) {
+    $result = insertKonsumen($_POST);
+
+    if ($result > 0) {
+        $alert_message = 'Berhasil menambahkan data konsumen!';
+        $alert_class = 'alert-success';
     } else {
-        echo mysqli_error($conn);
+        $alert_message = 'Gagal menambahkan data konsumen!';
+        $alert_class = 'alert-danger';
     }
+
+    echo "<script>
+            setTimeout(function() {
+                window.location.href = 'data_konsumenBaru.php';
+            }, 3000);
+          </script>";
 }
 ?>
 
@@ -31,6 +43,12 @@ if (isset($_POST['tambahKonsumen'])) {
     <section class="section">
       <div class="row">
         <div class="col-lg-12">
+          <?php if ($alert_message): ?>
+              <div class="alert <?php echo $alert_class; ?> alert-dismissible fade show" role="alert">
+                  <?php echo $alert_message; ?>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          <?php endif; ?>
 
           <div class="card">
             <div class="card-body">

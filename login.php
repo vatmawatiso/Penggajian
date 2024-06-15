@@ -22,7 +22,7 @@ if (isset($_POST['submit'])) {
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Pages / Login - NiceAdmin Bootstrap Template</title>
+    <title>Aditya Rotan</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -67,8 +67,8 @@ if (isset($_POST['submit'])) {
 
                             <div class="d-flex justify-content-center py-4">
                                 <a href="index.html" class="logo d-flex align-items-center w-auto">
-                                    <img src="assets/img/logo.png" alt="">
-                                    <span class="d-none d-lg-block">Cek Kendaraan</span>
+                                    <!-- <img src="assets/img/logo.png" alt=""> -->
+                                    <span class="d-none d-lg-block card-title text-center pb-0 fs-4">SISTEMA KARYAWAN </span>
                                 </a>
                             </div><!-- End Logo -->
 
@@ -97,7 +97,7 @@ if (isset($_POST['submit'])) {
                                         <p style="font-weight: bold;" class="small mb-0"><a href="lupa_password.php">Lupa sandi?</a></p>
 
                                         <div class="col-12">
-                                            <button style="font-weight: bold;" class="btn btn-primary w-100" type="submit" name="submit">Login</button>
+                                            <button class="btn btn-primary w-100" type="submit" name="submit">Login</button>
                                         </div>
                                         <div class="col-12">
                                             <p style="color: #c4c4c4; font-weight: bold;" class="small mb-0">Tidak punya akun? <a style="font-weight: bold;" href="register.php">Buat akun</a></p>
